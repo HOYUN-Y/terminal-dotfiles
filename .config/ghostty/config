@@ -1,0 +1,80 @@
+# Ghostty Configuration - Dark Modern (Catppuccin Mocha)
+
+# Theme
+#theme = Catppuccin Mocha
+
+####
+background = #011627
+foreground = #bdc1c6
+selection-background = #b2ceee
+selection-foreground = #080808
+cursor-color = #9ca1aa
+cursor-text = #080808
+palette = 0=#1d3b53
+palette = 1=#fc514e
+palette = 2=#a1cd5e
+palette = 3=#e7d37a
+palette = 4=#82aaff
+palette = 5=#c792ea
+palette = 6=#7fdbca
+palette = 7=#a1aab8
+palette = 8=#7c8f8f
+palette = 9=#ff5874
+palette = 10=#21c7a8
+palette = 11=#ecc48d
+palette = 12=#82aaff
+palette = 13=#ae81ff
+palette = 14=#7fdbca
+palette = 15=#d6deeb
+
+
+
+####
+
+# Font
+font-family = "Hack Nerd Font Mono"
+font-family = "Noto Sans CJK KR"
+font-size = 16
+
+# Window
+window-padding-x = 12
+window-padding-y = 10
+window-decoration = true
+macos-titlebar-style = tabs
+
+# Background (반투명 + 블러)
+background-opacity = 0.9
+background-blur-radius = 20
+
+# Autosuggestion color (가독성을 위해 밝게)
+palette = 8=#7f849c
+
+# Cursor
+cursor-style = block
+cursor-style-blink = false
+
+# Mouse
+mouse-hide-while-typing = true
+
+# Clipboard
+copy-on-select = true
+clipboard-paste-protection = false
+
+# Scrollback (에이전트 CLI 세션은 출력이 길어 넉넉하게)
+scrollback-limit = 100000
+
+# macOS
+macos-option-as-alt = true
+
+# Shell Integration
+shell-integration = zsh
+shell-integration-features = cursor,sudo,title
+
+# Keybindings - Split/Tab
+keybind = cmd+d=new_split:right
+keybind = cmd+shift+d=new_split:down
+keybind = cmd+w=close_surface
+keybind = cmd+alt+left=goto_split:left
+keybind = cmd+alt+right=goto_split:right
+keybind = cmd+alt+up=goto_split:top
+keybind = cmd+alt+down=goto_split:bottom

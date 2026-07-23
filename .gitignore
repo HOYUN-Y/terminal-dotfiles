@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# 에디터
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# 로컬 전용 설정 (비밀정보는 여기에)
+.zshrc.local
+*.local
+.env
+.env.*
+secrets/

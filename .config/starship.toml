@@ -1,0 +1,66 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = """
+[](purple)\
+$directory\
+[](fg:purple bg:blue)\
+$git_branch\
+$git_status\
+[](fg:blue) \
+$cmd_duration\
+$character"""
+
+palette = 'night_owl'
+
+[directory]
+style = "bg:purple fg:background"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[git_branch]
+symbol = " "
+style = "bg:blue fg:background"
+format = "[ $symbol$branch ]($style)"
+
+[git_status]
+style = "bg:blue fg:background"
+format = "[($all_status$ahead_behind )]($style)"
+
+[line_break]
+disabled = true
+
+[character]
+success_symbol = '[❯](bold fg:green)'
+error_symbol = '[❯](bold fg:red)'
+
+[cmd_duration]
+min_time = 2_000
+format = "[ 󱎫 $duration](fg:overlay) "
+
+[palettes.night_owl]
+background = "#011627"
+foreground = "#bdc1c6"
+selection = "#b2ceee"
+selection_foreground = "#080808"
+cursor = "#9ca1aa"
+
+black = "#1d3b53"
+red = "#fc514e"
+green = "#a1cd5e"
+yellow = "#e7d37a"
+blue = "#82aaff"
+purple = "#c792ea"
+cyan = "#7fdbca"
+white = "#a1aab8"
+
+bright_black = "#7c8f8f"
+bright_red = "#ff5874"
+bright_green = "#21c7a8"
+bright_yellow = "#ecc48d"
+bright_blue = "#82aaff"
+bright_purple = "#ae81ff"
+bright_cyan = "#7fdbca"
+bright_white = "#d6deeb"
+
+overlay = "#7c8f8f"
