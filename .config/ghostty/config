@@ -78,3 +78,8 @@ keybind = cmd+alt+left=goto_split:left
 keybind = cmd+alt+right=goto_split:right
 keybind = cmd+alt+up=goto_split:top
 keybind = cmd+alt+down=goto_split:bottom
+
+# 이 컴퓨터에만 적용할 설정 (git 추적 안 함, install.sh가 덮어쓰지 않음)
+# ~/.config/ghostty/config.local 을 만들면 위 설정을 덮어쓴다. 없으면 무시됨.
+#   예)  font-size = 14
+config-file = ?config.local
