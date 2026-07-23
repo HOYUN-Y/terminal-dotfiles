@@ -7,8 +7,8 @@ macOS 터미널 환경 설정. Ghostty + Starship + Zsh(Oh My Zsh · Zinit).
 새 맥에서 아래 세 줄이면 끝난다.
 
 ```bash
-git clone https://github.com/HOYUN-Y/terminal-dotfiles.git ~/dotfiles
-cd ~/dotfiles
+git clone https://github.com/HOYUN-Y/terminal-dotfiles.git ~/Documents/GitHub/terminal-dotfiles
+cd ~/Documents/GitHub/terminal-dotfiles
 ./install.sh
 ```
 
