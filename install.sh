@@ -89,6 +89,24 @@ install_zinit() {
     "$zinit_dir"
 }
 
+configure_git_delta() {
+  if ! command -v delta >/dev/null 2>&1; then
+    warn "delta가 없어 git 페이저 설정을 건너뜁니다."
+    return
+  fi
+
+  log "git이 delta를 쓰도록 설정합니다."
+
+  backup_file "$HOME/.gitconfig"
+
+  # user.name / user.email 등 기존 항목은 건드리지 않고
+  # delta 관련 키만 덮어쓴다 (여러 번 실행해도 같은 결과)
+  git config --global core.pager "delta"
+  git config --global interactive.diffFilter "delta --color-only"
+  git config --global delta.navigate true
+  git config --global delta.line-numbers true
+}
+
 install_configs() {
   log "기존 설정을 백업합니다."
 
@@ -124,6 +142,7 @@ main() {
 
   install_homebrew
   install_packages
+  configure_git_delta
   install_oh_my_zsh
   install_zinit
   install_configs

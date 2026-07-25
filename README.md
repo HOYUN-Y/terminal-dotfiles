@@ -55,6 +55,9 @@ starship --version        # 프롬프트
 fastfetch                 # 시스템 정보 (셸 시작 시 자동 실행)
 echo $ZSH                 # /Users/<이름>/.oh-my-zsh
 ls ~/.local/share/zinit   # Zinit 설치 위치
+
+z --help                  # zoxide가 .zshrc에서 로드됐는지 (없으면 exec zsh)
+git config --get core.pager   # delta 가 나와야 정상
 ```
 
 프롬프트가 아래처럼 보이면 성공이다.
@@ -69,6 +72,8 @@ ls ~/.local/share/zinit   # Zinit 설치 위치
 
 ### Homebrew 패키지 (`Brewfile`)
 
+#### 프롬프트 · 터미널
+
 | 패키지 | 용도 |
 |---|---|
 | `starship` | 크로스 셸 프롬프트 |
@@ -76,6 +81,28 @@ ls ~/.local/share/zinit   # Zinit 설치 위치
 | `ghostty` (cask) | GPU 가속 터미널 에뮬레이터 |
 | `font-hack-nerd-font` (cask) | 프롬프트 아이콘용 Nerd Font |
 | `font-noto-sans-cjk-kr` (cask) | 한글 폰트 |
+
+#### CLI 도구
+
+기존 명령을 더 편한 버전으로 갈아끼우거나, 터미널 작업을 돕는 도구들이다.
+
+| 패키지 | 대체 대상 | 쓰는 법 |
+|---|---|---|
+| `btop` | `top` | `btop` — CPU·메모리·네트워크를 그래프로 보는 시스템 모니터 |
+| `duf` | `df` | `duf` — 디스크 여유공간을 색상 표로 |
+| `dust` | `du` | `dust` — 어느 폴더가 용량을 먹는지 막대그래프로 (`dust ~/Downloads`) |
+| `gh` | — | `gh pr create`, `gh repo clone` 등 GitHub CLI |
+| `git-delta` | — | 직접 실행하지 않는다. `git diff`·`git show` 출력에 자동 적용 |
+| `lazygit` | — | `lazygit` — 터미널 안에서 뜨는 Git UI. 커밋·브랜치·스테이징을 키보드로 |
+| `neovim` | `vi` | `nvim` — 터미널 편집기 |
+| `zoxide` | `cd` | `z dotfiles` — 한 번 간 경로를 학습해 일부 이름만으로 점프 |
+
+`git-delta`와 `zoxide`는 **설치만으로는 동작하지 않아** 별도 연결이 필요하다. 이 저장소가 대신 처리한다.
+
+| 도구 | 연결 지점 | 하는 일 |
+|---|---|---|
+| `git-delta` | `install.sh` → `configure_git_delta()` | `git config --global`로 `core.pager` 등 4개 키 설정 |
+| `zoxide` | `.zshrc` | `eval "$(zoxide init zsh)"` — 이게 있어야 `z` 명령이 생긴다 |
 
 ### Zsh 플러그인
 
@@ -86,6 +113,42 @@ Oh My Zsh(`git` 플러그인) 위에 Zinit으로 세 개를 얹는다.
 | `fast-syntax-highlighting` | 명령어를 입력하는 동안 문법 강조 (오타 즉시 확인) |
 | `zsh-autosuggestions` | 히스토리 기반 자동완성 제안 (`→`로 수락) |
 | `zsh-completions` | 추가 자동완성 정의 |
+
+---
+
+## AI 코딩 CLI (수동 설치)
+
+**`install.sh`는 이들을 설치하지 않는다.** 로그인·인증이 필요하고 업데이트 주기가 저장소와 따로 돌기 때문에, 새 맥을 세팅한 뒤 필요할 때 직접 설치한다.
+
+### Claude Code
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+`~/.local/bin/claude`에 설치되고 스스로 업데이트한다. `.zshrc`가 `~/.local/bin`을 PATH에 넣으므로 `exec zsh` 후 바로 잡힌다.
+
+Homebrew를 선호하면 이쪽도 된다. 다만 cask는 네이티브 설치보다 버전이 조금 뒤처진다.
+
+```bash
+brew install --cask claude-code
+```
+
+> **두 방식을 같이 쓰지 않는다.** 경로가 달라(`~/.local/bin` vs `$(brew --prefix)/bin`) `claude`가 둘 다 잡히면 PATH 순서에 따라 어느 쪽이 실행될지 헷갈린다. `which -a claude`로 하나만 나오는지 확인한다.
+
+### Codex
+
+```bash
+brew install --cask codex
+```
+
+### 설치 확인
+
+```bash
+claude --version
+codex --version
+which -a claude    # 경로가 하나만 나와야 정상
+```
 
 ---
 
@@ -112,10 +175,13 @@ terminal-dotfiles/
 
 1. **Homebrew 설치** — 없을 때만. Apple Silicon은 `/opt/homebrew`, Intel은 `/usr/local`
 2. **`brew bundle`** — `Brewfile`의 패키지·앱·폰트 설치
-3. **Oh My Zsh 설치** — `KEEP_ZSHRC=yes`라 기존 `.zshrc`를 건드리지 않는다
-4. **Zinit 설치** — 이미 있으면 `git pull --ff-only`로 업데이트
-5. **설정 파일 배치** — 덮어쓰기 **전에** `~/.dotfiles-backup/<타임스탬프>/`로 백업
-6. **검증** — `zsh -n`으로 문법 검사, `starship explain`으로 설정 검사
+3. **git-delta 연결** — `~/.gitconfig` 백업 후 `git config --global`로 delta 관련 키만 설정
+4. **Oh My Zsh 설치** — `KEEP_ZSHRC=yes`라 기존 `.zshrc`를 건드리지 않는다
+5. **Zinit 설치** — 이미 있으면 `git pull --ff-only`로 업데이트
+6. **설정 파일 배치** — 덮어쓰기 **전에** `~/.dotfiles-backup/<타임스탬프>/`로 백업
+7. **검증** — `zsh -n`으로 문법 검사, `starship explain`으로 설정 검사
+
+3번은 `user.name`·`user.email` 같은 기존 항목을 건드리지 않는다. `core.pager`, `interactive.diffFilter`, `delta.navigate`, `delta.line-numbers` 4개만 쓴다. `.gitconfig`를 통째로 덮어쓰지 않는 이유는 머신마다 사용자 정보가 다르기 때문이다.
 
 모든 단계가 멱등적이라 **여러 번 실행해도 안전하다.**
 
@@ -127,6 +193,15 @@ terminal-dotfiles/
 ls ~/.dotfiles-backup/          # 타임스탬프별 백업 목록
 cp ~/.dotfiles-backup/<타임스탬프>/.zshrc ~/.zshrc
 exec zsh
+```
+
+`.gitconfig`도 delta 설정 전에 같은 위치로 백업된다. delta만 떼어내려면 아래처럼 키를 지운다.
+
+```bash
+git config --global --unset core.pager
+git config --global --unset interactive.diffFilter
+git config --global --unset delta.navigate
+git config --global --unset delta.line-numbers
 ```
 
 ---
@@ -220,6 +295,10 @@ ghostty +show-config | grep font-family    # 폰트가 2줄이면 정상
 | 프롬프트가 그대로 | starship이 로드 안 됨. `.zshrc`에서 starship이 **맨 마지막**인지 확인 (Oh My Zsh가 덮어씀) |
 | 플러그인이 동작 안 함 | `ls ~/.local/share/zinit/zinit.git` 확인 후 `./install.sh` 재실행 |
 | 설정을 되돌리고 싶음 | `~/.dotfiles-backup/` 참조 (위 "기존 설정 되돌리기") |
+| `z: command not found` | zoxide는 `.zshrc`의 `eval "$(zoxide init zsh)"`가 있어야 생긴다. `exec zsh` 후 재확인 |
+| `z`를 쳐도 점프 안 함 | 학습 기록이 없어서다. `cd`로 몇 번 다녀오면 그때부터 잡힌다 |
+| `git diff`가 그대로 | `git config --get core.pager`가 비었으면 `./install.sh` 재실행 |
+| `claude: command not found` | 네이티브 설치는 `~/.local/bin`에 들어간다. `exec zsh` 후 `which -a claude` 확인 |
 
 ### Homebrew가 두 개인 경우
 

@@ -5,6 +5,12 @@ elif [[ -x /usr/local/bin/brew ]]; then
   eval "$(/usr/local/bin/brew shellenv)"
 fi
 
+# 네이티브 설치 CLI 경로 (Claude Code 등 — README "AI 코딩 CLI" 참고)
+# 이미 PATH에 있으면 중복 추가하지 않는다
+if [[ -d "$HOME/.local/bin" && ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+  export PATH="$HOME/.local/bin:$PATH"
+fi
+
 # Fastfetch
 if [[ -o interactive ]] && (( $+commands[fastfetch] )); then
   fastfetch
@@ -31,6 +37,12 @@ if [[ -f "$ZINIT_HOME/zinit.zsh" ]]; then
   zinit light zdharma-continuum/fast-syntax-highlighting
   zinit light zsh-users/zsh-autosuggestions
   zinit light zsh-users/zsh-completions
+fi
+
+# zoxide — 자주 간 경로를 학습해 `z <일부이름>`으로 점프
+# compinit(Oh My Zsh·Zinit) 이후에 로드해야 자동완성이 붙는다
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
 fi
 
 # Starship은 마지막에 로드
