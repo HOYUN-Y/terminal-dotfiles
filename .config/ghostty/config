@@ -60,8 +60,8 @@ mouse-hide-while-typing = true
 copy-on-select = true
 clipboard-paste-protection = false
 
-# Scrollback (에이전트 CLI 세션은 출력이 길어 넉넉하게)
-scrollback-limit = 100000
+# Scrollback (단위: 바이트, 기본 10MB. 에이전트 CLI 출력이 길어 100MB)
+scrollback-limit = 100000000
 
 # macOS
 macos-option-as-alt = true
