@@ -1,0 +1,20 @@
+{
+  "logo": {
+    "source": "pop_small"
+  },
+  "modules": [
+    "title",
+    "separator",
+    "os",
+    "host",
+    "kernel",
+    "uptime",
+    "shell",
+    "terminal",
+    "cpu",
+    "gpu",
+    "memory",
+    "disk",
+    "battery"
+  ]
+}

@@ -1,0 +1,30 @@
+format = "$directory$git_branch$git_status$cmd_duration$status$line_break$character"
+
+[directory]
+style = "bold #a5b4fc"
+format = "[$path]($style) "
+truncation_length = 3
+truncation_symbol = ".../"
+
+[git_branch]
+symbol = "git:"
+style = "#94a3b8"
+format = "[$symbol$branch]($style) "
+
+[git_status]
+style = "#fbbf24"
+format = "[($all_status$ahead_behind)]($style) "
+
+[cmd_duration]
+min_time = 2_000
+style = "#94a3b8"
+format = "[$duration]($style) "
+
+[status]
+disabled = false
+style = "#f87171"
+format = "[exit $status]($style) "
+
+[character]
+success_symbol = "[>](bold #a5b4fc)"
+error_symbol = "[>](bold #f87171)"

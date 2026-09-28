@@ -1,0 +1,22 @@
+# Pop!_OS / COSMIC (Wayland)
+background = #111318
+foreground = #e6e9ef
+selection-background = #334155
+selection-foreground = #f8fafc
+cursor-color = #a5b4fc
+
+font-family = JetBrains Mono
+font-family = Noto Sans CJK KR
+font-size = 12
+
+window-padding-x = 10
+window-padding-y = 10
+window-decoration = true
+background-opacity = 1
+
+# Use Ghostty's Linux keybindings for splits, navigation, and tabs.
+command = /usr/bin/zsh
+shell-integration = detect
+
+# Machine-specific settings can be kept outside this repository.
+config-file = ?config.local

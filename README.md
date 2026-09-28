@@ -1,5 +1,7 @@
 # terminal-dotfiles
 
+Pop!_OS / COSMIC용 새 터미널 환경은 [Linux 설치 안내](linux/README.md)를 참고한다. 아래 내용은 macOS용이다.
+
 macOS 터미널 환경 설정. **Ghostty + Starship + Zsh**(Oh My Zsh · Zinit).
 
 새 맥에서 명령어 세 줄로 동일한 터미널 환경을 재현한다.
