@@ -39,8 +39,15 @@ if [[ -f "$ZINIT_HOME/zinit.zsh" ]]; then
   zinit light zsh-users/zsh-completions
 fi
 
-# zoxide — 자주 간 경로를 학습해 `z <일부이름>`으로 점프
-# compinit(Oh My Zsh·Zinit) 이후에 로드해야 자동완성이 붙는다
+# 머신별 설정은 저장소 밖에 보관
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
+
+# 명령 이력·파일 검색 (Ctrl+R / Ctrl+T)
+if command -v fzf >/dev/null 2>&1; then
+  source <(fzf --zsh)
+fi
+
+# 자주 쓰는 디렉터리 이동 (z / zi)
 if command -v zoxide >/dev/null 2>&1; then
   eval "$(zoxide init zsh)"
 fi

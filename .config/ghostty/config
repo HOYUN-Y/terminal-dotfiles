@@ -34,7 +34,7 @@ palette = 15=#d6deeb
 # Font
 font-family = "Hack Nerd Font Mono"
 font-family = "Noto Sans CJK KR"
-font-size = 16
+font-size = 13
 
 # Window
 window-padding-x = 12

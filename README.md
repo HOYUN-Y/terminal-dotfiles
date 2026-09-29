@@ -2,7 +2,7 @@
 
 Pop!_OS / COSMIC용 새 터미널 환경은 [Linux 설치 안내](linux/README.md)를 참고한다. 아래 내용은 macOS용이다.
 
-macOS 터미널 환경 설정. **Ghostty + Starship + Zsh**(Oh My Zsh · Zinit).
+macOS 터미널 환경 설정. **Ghostty + Starship + Zsh**(Oh My Zsh · Zinit), **zoxide · fzf · lazygit · Neovim**.
 
 새 맥에서 명령어 세 줄로 동일한 터미널 환경을 재현한다.
 
@@ -80,6 +80,10 @@ git config --get core.pager   # delta 가 나와야 정상
 |---|---|
 | `starship` | 크로스 셸 프롬프트 |
 | `fastfetch` | 셸 시작 시 시스템 정보 표시 |
+| `fzf` | 명령 이력·파일 검색 (`Ctrl+R`, `Ctrl+T`) |
+| `ripgrep`, `fd` | Neovim 본문·파일 검색 |
+| `tree-sitter-cli` | 문법 강조 파서 설치 |
+| `node` | npm 기반 Neovim 언어 서버·포매터 설치 |
 | `ghostty` (cask) | GPU 가속 터미널 에뮬레이터 |
 | `font-hack-nerd-font` (cask) | 프롬프트 아이콘용 Nerd Font |
 | `font-noto-sans-cjk-kr` (cask) | 한글 폰트 |
@@ -164,7 +168,8 @@ terminal-dotfiles/
 ├── .gitignore
 └── .config/
     ├── starship.toml       프롬프트 테마 (Night Owl)
-    └── ghostty/config      터미널 테마·폰트·키바인딩
+    ├── ghostty/config      터미널 테마·폰트·키바인딩
+    └── nvim/               Neovim 설정·플러그인 잠금 파일
 ```
 
 | 파일 | 배치 위치 |
@@ -172,20 +177,19 @@ terminal-dotfiles/
 | `.zshrc` | `~/.zshrc` |
 | `.config/starship.toml` | `~/.config/starship.toml` |
 | `.config/ghostty/config` | `~/.config/ghostty/config` |
+| `.config/nvim/` | `~/.config/nvim/` |
 
 ## install.sh가 하는 일
 
 1. **Homebrew 설치** — 없을 때만. Apple Silicon은 `/opt/homebrew`, Intel은 `/usr/local`
 2. **`brew bundle`** — `Brewfile`의 패키지·앱·폰트 설치
-3. **git-delta 연결** — `~/.gitconfig` 백업 후 `git config --global`로 delta 관련 키만 설정
-4. **Oh My Zsh 설치** — `KEEP_ZSHRC=yes`라 기존 `.zshrc`를 건드리지 않는다
-5. **Zinit 설치** — 이미 있으면 `git pull --ff-only`로 업데이트
-6. **설정 파일 배치** — 덮어쓰기 **전에** `~/.dotfiles-backup/<타임스탬프>/`로 백업
+3. **Oh My Zsh 설치** — `KEEP_ZSHRC=yes`라 기존 `.zshrc`를 건드리지 않는다
+4. **Zinit 설치** — 이미 있으면 `git pull --ff-only`로 업데이트
+5. **설정 파일 배치** — 기존 설정을 `~/.dotfiles-backup/<타임스탬프>-<고유문자>/`에 원래 상대 경로대로 이동한 후 복사. Neovim 디렉터리 전체도 백업한다
+6. **git-delta 연결** — 같은 백업 폴더에 Git 설정을 백업하고 delta 관련 키만 설정한다. 사용자 이름·이메일은 유지한다
 7. **검증** — `zsh -n`으로 문법 검사, `starship explain`으로 설정 검사
 
-3번은 `user.name`·`user.email` 같은 기존 항목을 건드리지 않는다. `core.pager`, `interactive.diffFilter`, `delta.navigate`, `delta.line-numbers` 4개만 쓴다. `.gitconfig`를 통째로 덮어쓰지 않는 이유는 머신마다 사용자 정보가 다르기 때문이다.
-
-모든 단계가 멱등적이라 **여러 번 실행해도 안전하다.**
+재실행하면 저장소의 설정으로 교체한다. 이 컴퓨터만의 Zsh 설정은 `~/.zshrc.local`에 보관하면 재설치해도 유지된다. 기존 `~/.zshrc`에 직접 추가한 내용은 자동 병합되지 않으므로 먼저 옮겨 둔다.
 
 ### 기존 설정 되돌리기
 
@@ -193,7 +197,7 @@ terminal-dotfiles/
 
 ```bash
 ls ~/.dotfiles-backup/          # 타임스탬프별 백업 목록
-cp ~/.dotfiles-backup/<타임스탬프>/.zshrc ~/.zshrc
+cp ~/.dotfiles-backup/<타임스탬프>-<고유문자>/.zshrc ~/.zshrc
 exec zsh
 ```
 
@@ -227,14 +231,45 @@ git pull && ./install.sh && exec zsh
 
 ### 머신마다 다른 설정 · 비밀정보
 
-**API 키나 토큰은 이 저장소에 절대 넣지 않는다.** `~/.zshrc.local`에 두고 `.zshrc` 끝에서 불러온다.
+**API 키나 토큰은 이 저장소에 절대 넣지 않는다.** Conda 초기화, 개인 PATH, API 키 등은 `~/.zshrc.local`에 둔다. 저장소의 `.zshrc`가 자동으로 불러오며, 설치 스크립트는 이 파일을 변경하지 않는다.
 
 ```bash
-# .zshrc 마지막 줄에 추가
-[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+# 머신별 설정 편집 (Git 추적 제외)
+nvim ~/.zshrc.local
 ```
 
 `.gitignore`가 `*.local`, `.env*`, `secrets/`를 제외하도록 돼 있다.
+
+---
+
+## 프로젝트 이동·검색·변경 확인
+
+설치 후 `exec zsh`로 새 설정을 불러온다.
+
+| 명령 / 키 | 동작 |
+|---|---|
+| `z terminal` | 방문 이력이 있는 프로젝트 중 이름이 일치하는 곳으로 이동 |
+| `zi` | 방문한 디렉터리 목록에서 검색·선택 |
+| `Ctrl+R` | 과거 명령 검색 |
+| `Ctrl+T` | 파일을 검색해 명령줄에 경로 삽입 |
+| `lazygit` | 현재 Git 저장소의 변경 파일·브랜치·커밋 확인 |
+
+처음 가는 프로젝트는 `cd`로 한 번 방문한다. lazygit은 기본 설정을 사용하며, 원작자의 Commitizen 등 별도 도구 의존 설정은 포함하지 않는다.
+
+## Neovim
+
+[craftzdog/dotfiles](https://github.com/craftzdog/dotfiles)의 Neovim 설정을 기반으로, 내부 셸은 `/bin/zsh`, LSP와 Treesitter 설정은 현재 LazyVim 방식에 맞췄다. Fish나 tmux 설정은 설치하지 않는다.
+
+```bash
+nvim                           # 첫 실행: 플러그인·언어 도구 자동 설치
+nvim -p README.md .gitignore    # 두 파일을 탭으로 열기
+```
+
+첫 실행 시 네트워크 연결이 필요하며 설치가 끝날 때까지 기다린다. `Tab` / `Shift+Tab`으로 탭 전환, `;f`로 파일 검색, `;r`로 본문 검색, `Esc` → `:qa` → Enter로 종료한다. 설치 확인은 `:checkhealth lazyvim`에서 할 수 있다.
+
+`lazy-lock.json`에 플러그인 버전을 기록한다. 다른 컴퓨터에서 동일한 플러그인 커밋으로 맞추려면 `:Lazy restore`를 사용한다. Homebrew 패키지·언어 서버 버전까지 고정하는 구성은 아니다. Copilot 사용은 별도 인증이 필요하다.
+
+로컬 Neovim 설정을 수정한 뒤 다른 컴퓨터에도 배포하려면 `.config/nvim/`의 해당 파일과 `lazy-lock.json`을 저장소에 반영한다. 설치 스크립트는 복사 방식이므로 자동 동기화하지 않는다.
 
 ---
 
@@ -280,7 +315,7 @@ ghostty +show-config | grep font-family    # 폰트가 2줄이면 정상
 ### 적용된 설정 요약
 
 - **테마** Night Owl (`#011627` 배경) — `starship.toml` 팔레트와 동일
-- **폰트** Hack Nerd Font Mono 16pt + Noto Sans CJK KR 폴백
+- **폰트** Hack Nerd Font Mono 13pt + Noto Sans CJK KR 폴백
 - **창** 반투명 0.9 + 블러 20, 패딩 12/10, 탭 스타일 타이틀바
 - **스크롤백** 100,000줄 (에이전트 CLI처럼 출력이 긴 작업 대비)
 - **기타** 선택 시 자동 복사, 붙여넣기 확인창 해제, `option`을 `alt`로

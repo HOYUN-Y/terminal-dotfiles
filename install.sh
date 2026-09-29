@@ -3,7 +3,7 @@
 set -Eeuo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BACKUP_DIR="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
+BACKUP_DIR=""
 
 log() {
   printf '\n\033[1;34m==>\033[0m %s\n' "$1"
@@ -16,16 +16,6 @@ warn() {
 fail() {
   printf '\033[1;31m오류:\033[0m %s\n' "$1" >&2
   exit 1
-}
-
-backup_file() {
-  local target="$1"
-
-  if [[ -e "$target" || -L "$target" ]]; then
-    mkdir -p "$BACKUP_DIR"
-    cp -R "$target" "$BACKUP_DIR/"
-    log "기존 파일 백업: $target"
-  fi
 }
 
 install_homebrew() {
@@ -97,7 +87,10 @@ configure_git_delta() {
 
   log "git이 delta를 쓰도록 설정합니다."
 
-  backup_file "$HOME/.gitconfig"
+  local git_config="${GIT_CONFIG_GLOBAL:-$HOME/.gitconfig}"
+  if [[ -f "$git_config" ]]; then
+    cp -p "$git_config" "$BACKUP_DIR/.gitconfig"
+  fi
 
   # user.name / user.email 등 기존 항목은 건드리지 않고
   # delta 관련 키만 덮어쓴다 (여러 번 실행해도 같은 결과)
@@ -108,21 +101,28 @@ configure_git_delta() {
 }
 
 install_configs() {
-  log "기존 설정을 백업합니다."
+  local target_home="${1:-$HOME}"
+  local relative target backup
+  local configs=(.zshrc .config/starship.toml .config/ghostty/config .config/nvim)
 
-  backup_file "$HOME/.zshrc"
-  backup_file "$HOME/.config/starship.toml"
-  backup_file "$HOME/.config/ghostty/config"
+  for relative in "${configs[@]}"; do
+    [[ -e "$DOTFILES_DIR/$relative" ]] || fail "설정 파일이 없습니다: $relative"
+  done
 
-  log "새 설정 파일을 복사합니다."
+  mkdir -p "$target_home/.dotfiles-backup"
+  BACKUP_DIR="$(mktemp -d "$target_home/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)-XXXXXX")"
 
-  mkdir -p "$HOME/.config/ghostty"
-
-  cp "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
-  cp "$DOTFILES_DIR/.config/starship.toml" \
-    "$HOME/.config/starship.toml"
-  cp "$DOTFILES_DIR/.config/ghostty/config" \
-    "$HOME/.config/ghostty/config"
+  for relative in "${configs[@]}"; do
+    target="$target_home/$relative"
+    backup="$BACKUP_DIR/$relative"
+    if [[ -e "$target" || -L "$target" ]]; then
+      mkdir -p "$(dirname "$backup")"
+      mv "$target" "$backup"
+      log "기존 설정 백업: $backup"
+    fi
+    mkdir -p "$(dirname "$target")"
+    cp -R "$DOTFILES_DIR/$relative" "$target"
+  done
 }
 
 validate_configs() {
@@ -142,10 +142,10 @@ main() {
 
   install_homebrew
   install_packages
-  configure_git_delta
   install_oh_my_zsh
   install_zinit
   install_configs
+  configure_git_delta
   validate_configs
 
   log "설치가 완료되었습니다."
@@ -164,4 +164,6 @@ main() {
   fi
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main "$@"
+fi
