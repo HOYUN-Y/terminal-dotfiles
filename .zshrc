@@ -39,6 +39,15 @@ if [[ -f "$ZINIT_HOME/zinit.zsh" ]]; then
   zinit light zsh-users/zsh-completions
 fi
 
+# Herdr 안에서 Codex 실행 옵션을 명시
+codex() {
+  if [[ ${HERDR_ENV:-} == 1 ]]; then
+    command codex --no-daemon --sandbox workspace-write --ask-for-approval on-request "$@"
+  else
+    command codex "$@"
+  fi
+}
+
 # 머신별 설정은 저장소 밖에 보관
 [[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
 
